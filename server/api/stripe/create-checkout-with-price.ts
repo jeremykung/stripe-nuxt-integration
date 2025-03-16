@@ -3,9 +3,7 @@ const baseUrl = useRuntimeConfig().public.BASE_URL as string
 
 export default eventHandler(async event => {
     // receive body params
-    // make stripe calls
-        // custom price
-        // create checkout
+    // create checkout w/custom price_data
     
     console.log('creating checkout session with price')
         
@@ -13,15 +11,6 @@ export default eventHandler(async event => {
     console.log('req body:', body)
 
     try {
-        // // Create Price
-        // const price = await stripe.prices.create({
-        //     currency: 'usd',
-        //     unit_amount: body.price,
-        //     product_data: {
-        //         name: body.course,
-        //     },
-        // });
-        // console.log('created price:', price)
 
         // Create Checkout Session
         const session = await stripe.checkout.sessions.create({
