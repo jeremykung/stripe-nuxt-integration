@@ -16,6 +16,22 @@ export function useStripe() {
         }
     }
 
+    async function customCheckout(customer: string, course: string, price: number) {
+        const res = await $fetch('/api/stripe/create-checkout-with-price', {
+            method: "POST",
+            body: {
+                customer,
+                course,
+                price
+            }
+        })
+
+        if (res) {
+            console.log('create checkout res:', res)
+            return res
+        }
+    }
+
     async function createProduct(name: string) {
         console.log('creating stripe product...')
         try {
@@ -147,5 +163,5 @@ export function useStripe() {
       },
     ]
   
-    return { checkout, createProduct, navigateToStripeDashboard, tiers }
+    return { checkout, customCheckout, createProduct, navigateToStripeDashboard, tiers }
   }

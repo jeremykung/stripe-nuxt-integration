@@ -4,6 +4,8 @@ const baseUrl = useRuntimeConfig().public.BASE_URL as string
 
 export default eventHandler(async event => {
     try {
+
+        // Accept Custom Price for Checkout Event
         const body = await readBody(event)
         const session = await stripe.checkout.sessions.create({
             customer: "cus_RwcKlM17WJ7oOP",
