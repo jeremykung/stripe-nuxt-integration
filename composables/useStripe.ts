@@ -15,6 +15,25 @@ export function useStripe() {
             // })
         }
     }
+
+    async function createProduct(name: string) {
+        console.log('creating stripe product...')
+        try {
+            const res = await $fetch('/api/stripe/create-product', {
+                method: 'POST',
+                body: {
+                    name,
+                },
+            })
+            if (res) {
+                console.log('create product response:', res)
+                return res
+            }
+        } catch (error) {
+            console.log('api error:', error)
+            return error
+        }
+    } 
   
     const navigateToStripeDashboard = async () => {
       const res = await $fetch('/api/stripe/create-portal-session', {
@@ -128,5 +147,5 @@ export function useStripe() {
       },
     ]
   
-    return { checkout, navigateToStripeDashboard, tiers }
+    return { checkout, createProduct, navigateToStripeDashboard, tiers }
   }
