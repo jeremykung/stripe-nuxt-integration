@@ -12,20 +12,33 @@
         <NuxtLink :to="paymentUrl">Pay Now</NuxtLink>
         <!-- Make Embedded Stripe Element -->
     </div>
+    <div id="checkout"></div>
 </template>
 
 <script lang="ts" setup>
-const stripe = useStripe()
+import { loadStripe } from '@stripe/stripe-js';
+
+useHead({
+  script: [
+    {
+      src: 'https://js.stripe.com/v3/',
+      async: true
+    }
+  ]
+})
+const stripeClient = await loadStripe(useRuntimeConfig().public.STRIPE_PUBLIC_KEY);
+const stripeApi = useStripe()
 
 const productName = ref<string>()
 const customPrice = ref<number>()
 const paymentUrl = ref<string>()
+const clientSecret = ref<string>()
 
 function createStripeProduct() {
     console.log('creating stripe product...')
     try {
         if (productName.value) {
-            stripe.createProduct(productName.value)
+            stripeApi.createProduct(productName.value)
         } else {
             throw new Error('Product name required.')
         }
@@ -38,10 +51,19 @@ async function courseCheckout() {
     console.log('course checkout...')
     try {
         if (customPrice.value) {
-            const checkout = await stripe.customCheckout("cus_RwcKlM17WJ7oOP", "prod_RxChzRHlApq7Wk", customPrice.value)
-            if (checkout) {
+            const checkout = await stripeApi.customCheckout("cus_RwcKlM17WJ7oOP", "prod_RxChzRHlApq7Wk", customPrice.value)
+            if (checkout && "url" in checkout) {
                 paymentUrl.value = checkout.url
                 return checkout
+            }
+            if (checkout?.client_secret) {
+                const embeddedCheckout = await stripeClient?.initEmbeddedCheckout({
+                    clientSecret: checkout.client_secret
+                })
+                embeddedCheckout?.mount("#checkout")
+                return checkout.client_secret
+            } else {
+                throw new Error("Checkout does not exist");
             }
         }
     } catch (error) {

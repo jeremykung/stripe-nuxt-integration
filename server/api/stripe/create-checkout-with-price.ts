@@ -25,13 +25,19 @@ export default eventHandler(async event => {
                 },
             ],
             mode: 'payment',
-            success_url: `${baseUrl}/success`,
-            cancel_url: `${baseUrl}/cancelled`,
+            // success_url: `${baseUrl}/success`,
+            // cancel_url: `${baseUrl}/cancelled`,
+            ui_mode: "embedded",
+            return_url: `${baseUrl}/checkout?session_id={CHECKOUT_SESSION_ID}`
         });
         console.log('checkout session created:', session)
 
         if (session.url) {
             return { url: session.url }
+        } else if (session.client_secret) {
+            return { client_secret: session.client_secret }
+        } else {
+            console.log('NO SESSION CREATED')
         }
           
     } catch (error) {

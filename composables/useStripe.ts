@@ -17,7 +17,7 @@ export function useStripe() {
     }
 
     async function customCheckout(customer: string, course: string, price: number) {
-        const res = await $fetch('/api/stripe/create-checkout-with-price', {
+        const response = await $fetch('/api/stripe/create-checkout-with-price', {
             method: "POST",
             body: {
                 customer,
@@ -26,9 +26,11 @@ export function useStripe() {
             }
         })
 
-        if (res) {
-            console.log('create checkout res:', res)
-            return res
+        if (response) {
+            console.log('create checkout res:', response)
+            return response
+        } else {
+            console.log('NO CUSTOM CHECKOUT RES')
         }
     }
 
@@ -49,7 +51,22 @@ export function useStripe() {
             console.log('api error:', error)
             return error
         }
-    } 
+    }
+
+    async function verifySession(sessionId: string) {
+        console.log('verifying session...')
+        try {
+            const response = await fetch(`/api/stripe/verify-session?session_id=${sessionId}`)
+            if (response) {
+                console.log('verify session response:', response)
+                return response
+            }
+        } catch (error) {
+            console.log('verify sesion error:', error)
+            return error
+        }
+
+    }
   
     const navigateToStripeDashboard = async () => {
       const res = await $fetch('/api/stripe/create-portal-session', {
@@ -163,5 +180,5 @@ export function useStripe() {
       },
     ]
   
-    return { checkout, customCheckout, createProduct, navigateToStripeDashboard, tiers }
+    return { checkout, customCheckout, createProduct, verifySession, navigateToStripeDashboard, tiers }
   }
